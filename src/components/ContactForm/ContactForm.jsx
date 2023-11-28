@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { nanoid } from 'nanoid';
 
 import Input from 'components/Input/Input';
 import AddContactBtn from 'components/Button/AddContactBtn';
-import { addContacts } from 'redux/contacts/contacts.reducer';
+import { addContact } from 'redux/contacts/contacts.reducer';
+import { selectContacts } from 'redux/contacts/contacts.selectors';
 import { FofmBasic } from './ContactFormStyle';
 
 
 const ContactForm = () => {
   const [name, setName] = useState('');
-  const [number, setNumber] = useState('');
+  const [phone, setPhone] = useState('');
   const dispatch = useDispatch();
-  const contacts = useSelector(state => state.contactsStore.contacts);
+  const contacts = useSelector(selectContacts);
  
 
   const handleFormInput = e => {
@@ -25,7 +25,7 @@ const ContactForm = () => {
         return;
       }
       case 'number': {
-        setNumber(inputNameValue);
+        setPhone(inputNameValue);
         return;
       }
       default:
@@ -34,29 +34,35 @@ const ContactForm = () => {
   };
 
 
-  const handlerFormSubmit = ({ name, number }) => {
+  const handlerFormSubmit = ({ name, phone }) => {
+    const contact = {
+      name: name,
+      phone: phone,
+    };
+
     const normalizeName = name.toLowerCase();
     const ArrayNames = contacts.find(
-      contact => contact.name.toLowerCase() === normalizeName
+      item => item.name.toLowerCase() === normalizeName
     );
     if (ArrayNames) {
       alert(`${name} вже є в книзі`);
       return;
     }
-    dispatch(addContacts({ id: nanoid(), name: name, number: number }, ...contacts))
+
+    dispatch(addContact(contact))
   };
 
 
   const handlerSubmitForm = e => {
     e.preventDefault();
-    handlerFormSubmit({ name, number });
+    handlerFormSubmit({ name, phone });
     resetState();
   };
 
   
   const resetState = () => {
     setName('');
-    setNumber('');
+    setPhone('');
   };
 
   return (
@@ -69,7 +75,7 @@ const ContactForm = () => {
         required="required"
       ></Input>
       <Input
-        value={number}
+        value={phone}
         onChange={handleFormInput}
         type="tel"
         name="number"

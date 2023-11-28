@@ -1,50 +1,52 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteContacts } from 'redux/contacts/contacts.reducer';
+import React, { useEffect } from 'react';
+
+import { fetchContacts,deleteContact } from 'redux/contacts/contacts.reducer';
+import { selectVisibleContacts,selectIsloading ,selectError} from 'redux/contacts/contacts.selectors';
 
 import ContactItem from './ContactItem';
+import Loader from 'components/Loader/Loader';
+
+
 
 const ContactList = () => {
   
-  const filter = useSelector(state=>state.filterStore.filter)
   const dispatch = useDispatch();
-  const contacts = useSelector(state => state.contactsStore.contacts);
+  const contacts = useSelector(selectVisibleContacts);
+  const isLoading=useSelector(selectIsloading)
+  const error=useSelector(selectError)
   
+
+
+
+  useEffect(()=>{
+    dispatch(fetchContacts())
+   
+  },[dispatch])
+
 
 
   const clickDeletBtn = contactId => {
-   
-    dispatch(deleteContacts(contactId))
-   
+
+    dispatch(deleteContact(contactId))
   };
 
  
-  const getContacts = () => {
-    const normalizeFilter = filter.toLowerCase().trim();
-
-    return contacts.filter(contact =>
-      contact.name.toLowerCase().includes(normalizeFilter)
-    );
-  
-  };
-
-  const contactElem = getContacts();
  
-
-
-
   return (
     <ul>
-      {contactElem.map(({id,name,number}) => (
-        <ContactItem
+      {isLoading && !error ? <Loader/> :
+      contacts.map(({id,name,phone}) => (
+      <ContactItem
         key={id}
         name={name}
-        number={number}
+        number={phone}
         onDeleteContact={clickDeletBtn}
         id={id}
         text='Delete'
 
         />
-     
+    
       ))}
     </ul>
   );
