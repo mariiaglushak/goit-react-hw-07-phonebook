@@ -10,7 +10,7 @@ export const Item = styled.li`
 
 export const ItemNumber = styled.span`
   font-weight: bold;
-  padding-left: 8px;
+  padding-left: 8px; 
 `;
 
 export const ItemBtnDel = styled.button`
